@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - CASPER Server</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #17172b; color: #fff; font-family: 'Segoe UI',sans-serif; }
+    .header { font-size: 2em; text-align: center; padding: 1em 0 .5em 0; font-weight: bold; }
+    #dash { max-width: 1080px; margin: 2em auto; padding: 2em; background: #25254b; border-radius: 18px; box-shadow: 0 2px 14px #0007;}
+    .row { display: flex; flex-wrap: wrap; gap: 2em; margin-bottom: 2em; }
+    .card { flex: 1; min-width: 200px; background: #232347; border-radius: 14px; padding: 1.7em 1.4em; box-shadow: 0 0 8px #0003; margin-bottom: 1.2em;}
+    .card h2 { font-size: 1.3em; margin-bottom: .8em; }
+    .ad-block { background: #2fc3c6; color: #212; border-radius: 10px; padding: 1em 1.2em; font-weight: bold; margin-bottom: 1.2em;}
+    .table-wrap {overflow-x:auto;}
+    table { width: 100%; background: #20203b; border-collapse: collapse; margin-top: 1em;}
+    th,td { padding: .7em 1em; border-bottom: 1px solid #333; }
+    th { background: #31286c; color: #fff; }
+    .ip { color: #35ee7c; }
+    @media (max-width:800px){ .row{flex-direction:column;} .card{margin-bottom:2em;} }
+  </style>
+</head>
+<body>
+  <div class="header">Admin Dashboard</div>
+  <div id="dash">
+    <div class="ad-block" id="ad-block">Ad: Upgrade to CASPER PRO for more features!</div>
+    <div class="row">
+      <div class="card">
+        <h2>Members Count</h2>
+        <div id="members-count">Loading...</div>
+      </div>
+      <div class="card">
+        <h2>Top Members</h2>
+        <ul id="top-members"></ul>
+      </div>
+      <div class="card">
+        <h2>Active Members</h2>
+        <ul id="active-members"></ul>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Broadcast Message</h2>
+      <form id="broadcast-form">
+        <input type="text" id="broadcast-msg" placeholder="Message to all (IP will be logged)" required style="width:85%;border-radius:10px;padding:.6em;border:none;">
+        <button type="submit" style="border-radius:10px;padding:.6em 1.4em;background:#4f8dfd;color:#fff;border:none;">Broadcast</button>
+      </form>
+      <div id="broadcast-log" style="margin-top:1em;color:#35ee7c;"></div>
+    </div>
+    <div class="card table-wrap">
+      <h2>All Members & IPs</h2>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Status</th><th>IP</th></tr>
+        </thead>
+        <tbody id="members-table"></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="admin.js"></script>
+</body>
+</html>
