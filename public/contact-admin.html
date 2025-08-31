@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Admin - CASPER Server</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="header">Contact Admin</div>
+  <div id="contact-box">
+    <form id="admin-form">
+      <label for="cat">Category</label>
+      <select id="cat" required>
+        <option value="">Select</option>
+        <option value="bug">Bug Report</option>
+        <option value="thanks">Thanks</option>
+        <option value="suggestion">Suggestion</option>
+      </select>
+      <label for="msg">Message</label>
+      <textarea id="msg" rows="5" required placeholder="Type your message..."></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <div id="feedback"></div>
+    <div id="admin-resp" style="display:none"></div>
+  </div>
+  <script src="navbar.js"></script>
+  <script src="contact-admin.js"></script>
+</body>
+</html>
