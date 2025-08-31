@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASPER TECH - Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="color-movement"></div>
+    
+    <!-- Welcome Message (appears on first visit) -->
+    <div id="welcomeMessage" class="welcome-message hidden">
+        <h2><i class="fas fa-rocket"></i> Welcome to CASPER TECH!</h2>
+        <p>Your gateway to advanced technology solutions. Join our community and explore cutting-edge AI tools, chat with users worldwide, and experience the future of digital interaction.</p>
+        <button class="btn primary" onclick="closeWelcome()">Get Started</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">CASPER TECH</h1>
+            <p class="tagline">Advanced Technology Solutions</p>
+        </div>
+
+        <!-- Login/Register Forms -->
+        <div class="form-container">
+            <h2 style="text-align: center; margin-bottom: 30px; color: var(--accent-cyan);">
+                <i class="fas fa-user-circle"></i> Access Your Account
+            </h2>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username:</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button class="btn" onclick="login()" style="width: 100%; margin-bottom: 15px;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="btn" onclick="showRegisterForm()" style="width: 100%; background: rgba(0, 153, 255, 0.3);">
+                    <i class="fas fa-user-plus"></i> Create New Account
+                </button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username:</label>
+                    <input type="text" id="registerUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email:</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password:</label>
+                    <input type="password" id="registerPassword" placeholder="Choose a password" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Confirm Password:</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <button class="btn" onclick="register()" style="width: 100%; margin-bottom: 15px;">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+                <button class="btn" onclick="showLoginForm()" style="width: 100%; background: rgba(0, 153, 255, 0.3);">
+                    <i class="fas fa-arrow-left"></i> Back to Login
+                </button>
+            </div>
+            
+            <!-- Admin Login Form -->
+            <div id="adminForm" class="hidden">
+                <div class="form-group">
+                    <label><i class="fas fa-shield-alt"></i> Admin Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+                </div>
+                <button class="btn primary" onclick="adminLogin()" style="width: 100%; margin-bottom: 15px;">
+                    <i class="fas fa-crown"></i> Access Admin Panel
+                </button>
+                <button class="btn" onclick="showLoginForm()" style="width: 100%; background: rgba(0, 153, 255, 0.3);">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <!-- Admin Access Button -->
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="showAdminForm()" style="background: rgba(255, 107, 53, 0.3); font-size: 12px;">
+                    <i class="fas fa-cog"></i> Admin Access
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Preview -->
+        <div class="services-grid" style="margin-top: 50px;">
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-comments"></i></div>
+                <h3 class="service-title">Global Chat</h3>
+                <p class="service-description">Connect with users worldwide in real-time conversations with instant translation support.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-robot"></i></div>
+                <h3 class="service-title">AI Assistants</h3>
+                <p class="service-description">Chat with advanced AI models including David Cyril Tech AI and NexOracle AI for intelligent conversations.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-users"></i></div>
+                <h3 class="service-title">Private Messaging</h3>
+                <p class="service-description">Start private conversations with other users and create group chats for collaborative discussions.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="modal hidden">
+        <div class="modal-content" style="text-align: center;">
+            <div style="font-size: 3em; color: var(--accent-cyan); margin-bottom: 20px;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h3>Connecting...</h3>
+            <p>Please wait while we set up your session.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Show welcome message on first visit
+        document.addEventListener('DOMContentLoaded', function() {
+            const hasVisited = localStorage.getItem('casper_visited');
+            if (!hasVisited) {
+                setTimeout(() => {
+                    document.getElementById('welcomeMessage').classList.remove('hidden');
+                }, 1000);
+                localStorage.setItem('casper_visited', 'true');
+            }
+        });
+
+        function closeWelcome() {
+            document.getElementById('welcomeMessage').classList.add('hidden');
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('adminForm').classList.add('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('adminForm').classList.add('hidden');
+        }
+
+        function showAdminForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('adminForm').classList.remove('hidden');
+        }
+
+        // Add loading animation
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        // Enhanced form validation
+        document.getElementById('registerPassword').addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            updatePasswordIndicator(strength);
+        });
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength += 25;
+            if (/[a-z]/.test(password)) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9!@#$%^&*]/.test(password)) strength += 25;
+            return strength;
+        }
+
+        function updatePasswordIndicator(strength) {
+            // Create password strength indicator if it doesn't exist
+            let indicator = document.getElementById('passwordStrength');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'passwordStrength';
+                indicator.style.cssText = `
+                    margin-top: 5px;
+                    height: 4px;
+                    border-radius: 2px;
+                    background: rgba(255, 255, 255, 0.1);
+                    overflow: hidden;
+                `;
+                
+                const bar = document.createElement('div');
+                bar.id = 'strengthBar';
+                bar.style.cssText = `
+                    height: 100%;
+                    transition: width 0.3s ease, background-color 0.3s ease;
+                    border-radius: 2px;
+                `;
+                
+                indicator.appendChild(bar);
+                document.getElementById('registerPassword').parentNode.appendChild(indicator);
+            }
+            
+            const bar = document.getElementById('strengthBar');
+            bar.style.width = strength + '%';
+            
+            if (strength < 50) {
+                bar.style.background = '#ff4757';
+            } else if (strength < 75) {
+                bar.style.background = '#ffa502';
+            } else {
+                bar.style.background = '#2ed573';
+            }
+        }
+
+        // Add enter key listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginUsername').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+            });
+            
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            
+            document.getElementById('registerPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') document.getElementById('confirmPassword').focus();
+            });
+            
+            document.getElementById('confirmPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') register();
+            });
+            
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') adminLogin();
+            });
+        });
+    </script>
+</body>
+</html>
