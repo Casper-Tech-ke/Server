@@ -1,488 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CASPER TECH - Home</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <title>CASPER TECH KENYA</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: linear-gradient(110deg, #232347 0%, #4f8dfd 100%); min-height:100vh; }
+    .nav { margin-bottom: 2em;}
+    .welcome { text-align:center; font-size:2em; padding-top:2.2em; color:#fff; letter-spacing:1.5px; }
+    .services-box {
+      max-width:900px; margin:2.5em auto 0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2.7em;
+      animation: fadein 1.2s;
+    }
+    .service-card {
+      background: linear-gradient(120deg, #313166 60%, #4f8dfd 100%);
+      border-radius: 18px; color: #fff; padding: 2.2em 1.7em;
+      box-shadow: 0 2px 16px #0004; text-align:center;
+      position:relative; overflow:hidden; cursor:pointer;
+      transition: transform .25s, box-shadow .25s, background .2s;
+      animation: floatin 1.6s;
+    }
+    .service-card:hover {
+      transform: translateY(-14px) scale(1.04) rotate(-1deg);
+      box-shadow: 0 10px 36px #4f8dfd66;
+      background: linear-gradient(90deg, #4f8dfd 85%, #35ee7c 100%);
+      color: #232347;
+    }
+    .service-card .icon {
+      font-size:2.7em; margin-bottom:.6em; display:block;
+      animation: bounce 1.6s infinite alternate cubic-bezier(.71,-0.01,.63,1.29);
+    }
+    .service-card .desc { font-size:1.07em; color:#b8e5ff;}
+    @keyframes fadein { from {opacity:0;transform:translateY(60px);} to {opacity:1;transform:none;} }
+    @keyframes floatin { from {opacity:0;transform:scale(.95);} to {opacity:1;transform:none;} }
+    @keyframes bounce { 0%{transform:translateY(0);} 100%{transform:translateY(-8px);} }
+    @media (max-width:700px){ .services-box{grid-template-columns:1fr;} .welcome{font-size:1.3em;} }
+  </style>
 </head>
 <body>
-    <div class="color-movement"></div>
-    
-    <!-- Settings Button -->
-    <div class="settings-btn" onclick="showSettings()">
-        <i class="fas fa-cog"></i>
+  <div id="navbar"></div>
+  <div class="welcome">Welcome to <b>CASPER TECH SUPPORT SERVER</b>! <span id="user-greet"></span></div>
+  <div class="services-box">
+    <div class="service-card" onclick="location='ai-chat.html'">
+      <span class="icon">🤖</span>
+      <div class="title"><b>CASPER AI Chat</b></div>
+      <div class="desc">Chat with our smart AI assistant in real time!</div>
     </div>
-
-    <!-- Broadcast Banner -->
-    <div id="broadcastBanner" class="broadcast-banner"></div>
-
-    <!-- Ad Overlay -->
-    <div id="adOverlay" class="ad-overlay hidden">
-        <div class="ad-content">
-            <img id="adImage" src="" alt="Advertisement" style="display: none;">
-            <h3 id="adTitle">Advertisement</h3>
-            <p id="adText"></p>
-            <div style="margin-top: 20px;">
-                <span id="adTimer" style="color: var(--warm-orange); font-weight: bold;">5</span>
-                <span style="opacity: 0.7;"> seconds remaining</span>
-            </div>
-        </div>
+    <div class="service-card" onclick="location='private-chat.html'">
+      <span class="icon">🔒</span>
+      <div class="title"><b>Private Messaging</b></div>
+      <div class="desc">Securely message other users privately.</div>
     </div>
-
-    <div class="container">
-        <div class="header">
-            <h1 class="logo">CASPER TECH</h1>
-            <p class="tagline">Welcome back, <span id="currentUser"></span>!</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="admin-stats" style="margin-bottom: 40px;">
-            <div class="stat-card">
-                <div class="stat-number" id="onlineUsers">0</div>
-                <div>Online Users</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalMessages">0</div>
-                <div>Messages Today</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="aiSessions">0</div>
-                <div>AI Sessions</div>
-            </div>
-        </div>
-
-        <!-- Services Grid -->
-        <h2 style="text-align: center; margin-bottom: 30px; color: var(--accent-cyan);">
-            <i class="fas fa-rocket"></i> Explore Our Services
-        </h2>
-        
-        <div class="services-grid">
-            <!-- Global Chat -->
-            <div class="service-card" onclick="navigateTo('/chat')">
-                <div class="service-icon"><i class="fas fa-globe-americas"></i></div>
-                <h3 class="service-title">Global Chat</h3>
-                <p class="service-description">Join the worldwide conversation! Chat with users from around the globe with real-time translation support.</p>
-                <button class="btn" style="margin-top: 15px;">
-                    <i class="fas fa-comments"></i> Join Chat
-                </button>
-            </div>
-
-            <!-- AI Chat -->
-            <div class="service-card" onclick="navigateTo('/ai-chat')">
-                <div class="service-icon"><i class="fas fa-robot"></i></div>
-                <h3 class="service-title">AI Assistants</h3>
-                <p class="service-description">Experience cutting-edge AI technology with David Cyril Tech AI and NexOracle AI assistants.</p>
-                <button class="btn" style="margin-top: 15px;">
-                    <i class="fas fa-brain"></i> Chat with AI
-                </button>
-            </div>
-
-            <!-- Private Chat -->
-            <div class="service-card" onclick="navigateTo('/private-chat')">
-                <div class="service-icon"><i class="fas fa-user-friends"></i></div>
-                <h3 class="service-title">Private Messages</h3>
-                <p class="service-description">Start private conversations with other users or create group chats for team discussions.</p>
-                <button class="btn" style="margin-top: 15px;">
-                    <i class="fas fa-envelope"></i> Start Chat
-                </button>
-            </div>
-
-            <!-- Contact Admin -->
-            <div class="service-card" onclick="navigateTo('/contact-admin')">
-                <div class="service-icon"><i class="fas fa-headset"></i></div>
-                <h3 class="service-title">Support Center</h3>
-                <p class="service-description">Get help from our support team or chat directly with administrators for assistance.</p>
-                <button class="btn" style="margin-top: 15px;">
-                    <i class="fas fa-life-ring"></i> Get Support
-                </button>
-            </div>
-
-            <!-- File Sharing -->
-            <div class="service-card">
-                <div class="service-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                <h3 class="service-title">File Sharing</h3>
-                <p class="service-description">Securely share files and documents with other users in the platform.</p>
-                <button class="btn" style="margin-top: 15px;" disabled>
-                    <i class="fas fa-upload"></i> Coming Soon
-                </button>
-            </div>
-
-            <!-- Voice Chat -->
-            <div class="service-card">
-                <div class="service-icon"><i class="fas fa-microphone"></i></div>
-                <h3 class="service-title">Voice Chat</h3>
-                <p class="service-description">Join voice conversations with crystal-clear audio quality and noise cancellation.</p>
-                <button class="btn" style="margin-top: 15px;" disabled>
-                    <i class="fas fa-phone"></i> Coming Soon
-                </button>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div style="margin-top: 50px;">
-            <h3 style="color: var(--accent-cyan); margin-bottom: 20px;">
-                <i class="fas fa-history"></i> Recent Activity
-            </h3>
-            <div id="recentActivity" class="admin-panel">
-                <div style="text-align: center; opacity: 0.7;">
-                    <i class="fas fa-clock" style="font-size: 2em; margin-bottom: 10px;"></i>
-                    <p>Your recent activities will appear here</p>
-                </div>
-            </div>
-        </div>
+    <div class="service-card" onclick="location='contact-admin.html'">
+      <span class="icon">📬</span>
+      <div class="title"><b>Contact Admin</b></div>
+      <div class="desc">Send feedback, bug reports, or suggestions directly!</div>
     </div>
-
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="modal hidden">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="color: var(--accent-cyan);">
-                    <i class="fas fa-cog"></i> Settings
-                </h3>
-                <button class="btn" onclick="closeSettings()" style="padding: 8px 12px;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <!-- Profile Settings -->
-            <div class="form-group">
-                <label><i class="fas fa-user"></i> Display Name:</label>
-                <input type="text" id="displayName" placeholder="Your display name">
-            </div>
-
-            <!-- Notification Settings -->
-            <div style="margin: 20px 0;">
-                <h4 style="color: var(--accent-cyan); margin-bottom: 15px;">
-                    <i class="fas fa-bell"></i> Notifications
-                </h4>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Sound Notifications</span>
-                    <label class="switch">
-                        <input type="checkbox" id="soundNotifications" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Desktop Notifications</span>
-                    <label class="switch">
-                        <input type="checkbox" id="desktopNotifications">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Theme Settings -->
-            <div style="margin: 20px 0;">
-                <h4 style="color: var(--accent-cyan); margin-bottom: 15px;">
-                    <i class="fas fa-palette"></i> Appearance
-                </h4>
-                <div class="form-group">
-                    <label>Theme:</label>
-                    <select id="themeSelect">
-                        <option value="dark">Dark Theme</option>
-                        <option value="blue">Ocean Blue</option>
-                        <option value="purple">Cosmic Purple</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 30px;">
-                <button class="btn" onclick="saveSettings()" style="flex: 1;">
-                    <i class="fas fa-save"></i> Save Settings
-                </button>
-                <button class="btn primary" onclick="logout()" style="flex: 1;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </div>
-        </div>
+    <div class="service-card" onclick="location='dashboard.html'">
+      <span class="icon">📊</span>
+      <div class="title"><b>Admin Dashboard</b></div>
+      <div class="desc">View server stats, broadcast, and manage users.</div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="/js/main.js"></script>
-    <script>
-        let socket;
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication
-            const token = localStorage.getItem('casper_token');
-            const username = localStorage.getItem('casper_username');
-            
-            if (!token || !username) {
-                window.location.href = '/';
-                return;
-            }
-
-            document.getElementById('currentUser').textContent = username;
-            
-            // Initialize socket connection
-            initializeSocket();
-            
-            // Load user stats
-            loadStats();
-            
-            // Load recent activity
-            loadRecentActivity();
-            
-            // Check for ads
-            setTimeout(checkForAds, 2000);
-        });
-
-        function initializeSocket() {
-            socket = io();
-            
-            socket.on('connect', () => {
-                socket.emit('join', { 
-                    username: localStorage.getItem('casper_username')
-                });
-            });
-
-            socket.on('broadcast', (data) => {
-                showBroadcast(data.message, data.duration || 5000);
-            });
-
-            socket.on('newAd', (data) => {
-                showAd(data);
-            });
-
-            socket.on('userJoined', (data) => {
-                addRecentActivity(`${data.username} joined the platform`, 'user-plus');
-            });
-
-            socket.on('userLeft', (data) => {
-                addRecentActivity(`${data.username} left the platform`, 'user-minus');
-            });
-        }
-
-        async function loadStats() {
-            try {
-                const token = localStorage.getItem('casper_token');
-                const response = await fetch('/api/users', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const users = await response.json();
-                    const onlineCount = users.filter(u => u.status === 'online').length;
-                    document.getElementById('onlineUsers').textContent = onlineCount;
-                }
-
-                // Load messages count (mock for now)
-                document.getElementById('totalMessages').textContent = Math.floor(Math.random() * 500) + 100;
-                document.getElementById('aiSessions').textContent = Math.floor(Math.random() * 50) + 10;
-            } catch (error) {
-                console.error('Failed to load stats:', error);
-            }
-        }
-
-        function loadRecentActivity() {
-            const activities = [
-                { text: 'Joined global chat room', icon: 'comments', time: '2 minutes ago' },
-                { text: 'Started AI conversation', icon: 'robot', time: '15 minutes ago' },
-                { text: 'Account created successfully', icon: 'user-check', time: '1 hour ago' }
-            ];
-
-            const container = document.getElementById('recentActivity');
-            container.innerHTML = activities.map(activity => `
-                <div style="display: flex; align-items: center; padding: 12px; margin-bottom: 8px; background: rgba(0, 212, 255, 0.1); border-radius: 8px;">
-                    <i class="fas fa-${activity.icon}" style="color: var(--accent-cyan); margin-right: 15px; width: 20px;"></i>
-                    <div style="flex: 1;">
-                        <div>${activity.text}</div>
-                        <small style="opacity: 0.7;">${activity.time}</small>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function addRecentActivity(text, icon) {
-            const container = document.getElementById('recentActivity');
-            const activityDiv = document.createElement('div');
-            activityDiv.style.cssText = 'display: flex; align-items: center; padding: 12px; margin-bottom: 8px; background: rgba(0, 212, 255, 0.1); border-radius: 8px; animation: slideInLeft 0.4s ease-out;';
-            activityDiv.innerHTML = `
-                <i class="fas fa-${icon}" style="color: var(--accent-cyan); margin-right: 15px; width: 20px;"></i>
-                <div style="flex: 1;">
-                    <div>${text}</div>
-                    <small style="opacity: 0.7;">Just now</small>
-                </div>
-            `;
-            container.insertBefore(activityDiv, container.firstChild);
-            
-            // Keep only last 5 activities
-            const activities = container.children;
-            if (activities.length > 5) {
-                container.removeChild(activities[activities.length - 1]);
-            }
-        }
-
-        async function checkForAds() {
-            // Simulate random ads
-            if (Math.random() < 0.3) { // 30% chance
-                const ads = [
-                    {
-                        content: "🚀 Upgrade to Premium for unlimited AI conversations!",
-                        duration: 5000
-                    },
-                    {
-                        content: "💬 Join our Discord community for exclusive features!",
-                        duration: 4000
-                    }
-                ];
-                const randomAd = ads[Math.floor(Math.random() * ads.length)];
-                showAd(randomAd);
-            }
-        }
-
-        function showBroadcast(message, duration = 5000) {
-            const banner = document.getElementById('broadcastBanner');
-            banner.textContent = message;
-            banner.classList.add('show');
-
-            setTimeout(() => {
-                banner.classList.remove('show');
-            }, duration);
-        }
-
-        function showAd(adData) {
-            const overlay = document.getElementById('adOverlay');
-            const title = document.getElementById('adTitle');
-            const text = document.getElementById('adText');
-            const image = document.getElementById('adImage');
-            const timer = document.getElementById('adTimer');
-
-            title.textContent = adData.title || 'Special Offer';
-            text.textContent = adData.content;
-
-            if (adData.imageUrl) {
-                image.src = adData.imageUrl;
-                image.style.display = 'block';
-            } else {
-                image.style.display = 'none';
-            }
-
-            overlay.classList.remove('hidden');
-
-            let timeLeft = Math.floor((adData.duration || 5000) / 1000);
-            const countdown = setInterval(() => {
-                timer.textContent = timeLeft;
-                timeLeft--;
-
-                if (timeLeft < 0) {
-                    clearInterval(countdown);
-                    overlay.classList.add('hidden');
-                }
-            }, 1000);
-        }
-
-        function navigateTo(url) {
-            window.location.href = url;
-        }
-
-        function showSettings() {
-            document.getElementById('settingsModal').classList.remove('hidden');
-            
-            // Load current settings
-            const username = localStorage.getItem('casper_username');
-            document.getElementById('displayName').value = username || '';
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.add('hidden');
-        }
-
-        function saveSettings() {
-            const displayName = document.getElementById('displayName').value;
-            const soundNotifications = document.getElementById('soundNotifications').checked;
-            const desktopNotifications = document.getElementById('desktopNotifications').checked;
-            const theme = document.getElementById('themeSelect').value;
-
-            // Save settings to localStorage
-            localStorage.setItem('casper_settings', JSON.stringify({
-                displayName,
-                soundNotifications,
-                desktopNotifications,
-                theme
-            }));
-
-            showMessage('Settings saved successfully!', 'success');
-            closeSettings();
-        }
-
-        function logout() {
-            localStorage.removeItem('casper_token');
-            localStorage.removeItem('casper_username');
-            localStorage.removeItem('casper_settings');
-            
-            if (socket) {
-                socket.disconnect();
-            }
-            
-            window.location.href = '/';
-        }
-
-        function showMessage(message, type = 'success') {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = type;
-            messageDiv.textContent = message;
-            messageDiv.style.position = 'fixed';
-            messageDiv.style.top = '20px';
-            messageDiv.style.right = '20px';
-            messageDiv.style.zIndex = '1002';
-            messageDiv.style.maxWidth = '300px';
-            document.body.appendChild(messageDiv);
-            
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
-        }
-    </script>
-
-    <style>
-        /* Toggle Switch Styles */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255, 255, 255, 0.2);
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--accent-cyan);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-    </style>
+  </div>
+  <script src="navbar.js"></script>
+  <script>
+    // Greet user
+    function getCookie(name) {
+      let nameEQ = name + "=";
+      let ca = document.cookie.split(';');
+      for(let i=0;i < ca.length;i++) {
+        let c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    }
+    const user = getCookie("casper_user");
+    document.getElementById("user-greet").innerHTML = user ? `👋 <b>${user}</b>` : "";
+    if (!user) window.location = "index.html";
+  </script>
 </body>
 </html>
