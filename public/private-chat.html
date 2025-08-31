@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Private Chat - CASPER Server</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #191938; color: #fff; font-family: 'Segoe UI',sans-serif; }
+    .header { text-align: center; font-size: 1.7em; margin: 1em 0; font-weight: bold; }
+    #chat-area { display: flex; max-width: 900px; margin: 2em auto; border-radius: 14px; overflow: hidden; background: #232343; box-shadow: 0 2px 12px #0005; }
+    #users { min-width: 180px; background: #25254b; border-right: 1px solid #333; padding: 1em 0; }
+    #users ul { list-style: none; padding: 0; margin: 0; }
+    #users li { cursor: pointer; padding: .7em 1.2em; border-bottom: 1px solid #333; }
+    #users li.selected, #users li:hover { background: #4f8dfd; color: #fff; }
+    #private-messages { flex: 1; display: flex; flex-direction: column; }
+    #private-messages .messages { flex: 1; overflow-y: auto; padding: 1.5em; background: #232343; }
+    #private-messages .msg { margin: 1em 0; }
+    #private-messages .msg.you { text-align: right; }
+    #private-messages .msg .bubble { display: inline-block; padding: .8em 1.2em; border-radius: 18px; background: #3c3377; color: #fff; max-width: 80%; word-break: break-word; }
+    #private-messages .msg.you .bubble { background: #4f8dfd; color: #fff; }
+    #private-messages .msg.admin .bubble { background: #2fc3c6; color: #fff; }
+    #private-form { display: flex; gap: 10px; padding: 1em; background: #20203b; }
+    #private-input { flex: 1; border-radius: 14px; border: none; padding: .7em 1em; font-size: 1em; }
+    #private-send { border-radius: 14px; padding: .7em 1.4em; background: #4f8dfd; color: #fff; border: none; font-weight: bold; cursor: pointer; }
+    @media (max-width:900px){ #chat-area{flex-direction:column;} #users{min-width:unset;width:100%;border-right:0;border-bottom:1px solid #333;} }
+  </style>
+</head>
+<body>
+  <div class="header">Private Chat</div>
+  <div id="chat-area">
+    <div id="users">
+      <ul id="user-list"><li>Loading users...</li></ul>
+    </div>
+    <div id="private-messages">
+      <div class="messages" id="private-msg"></div>
+      <form id="private-form">
+        <input type="text" id="private-input" autocomplete="off" placeholder="Type a private message..." required>
+        <button type="submit" id="private-send">Send</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    // Simulated user list & message logic
+    // Replace with real user loading and backend message sending as needed
+    const USERS = ["Admin", "Alice", "Bob", "Charlie"];
+    let selectedUser = USERS[1]; // Skip "Admin" as user option
+    let messages = { "Alice": [], "Bob": [], "Charlie": [] };
+    const userList = document.getElementById('user-list');
+    function renderUsers() {
+      userList.innerHTML = '';
+      USERS.slice(1).forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        if (name === selectedUser) li.classList.add('selected');
+        li.onclick = () => { selectedUser = name; renderUsers(); renderMessages(); };
+        userList.appendChild(li);
+      });
+    }
+    function renderMessages() {
+      const msgDiv = document.getElementById('private-msg');
+      msgDiv.innerHTML = '';
+      (messages[selectedUser]||[]).forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'msg ' + m.sender;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerText = m.text;
+        div.appendChild(bubble);
+        msgDiv.appendChild(div);
+      });
+      msgDiv.scrollTop = msgDiv.scrollHeight;
+    }
+    renderUsers(); renderMessages();
+
+    document.getElementById('private-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const text = document.getElementById('private-input').value.trim();
+      if (!text) return;
+      // Add message
+      if (!messages[selectedUser]) messages[selectedUser] = [];
+      messages[selectedUser].push({ sender: 'you', text: text });
+      // Simulate admin reply for demo
+      setTimeout(() => {
+        messages[selectedUser].push({ sender: 'admin', text: "Admin: Message received." });
+        renderMessages();
+      }, 1200);
+      document.getElementById('private-input').value = '';
+      renderMessages();
+    });
+  </script>
+</body>
+</html>
