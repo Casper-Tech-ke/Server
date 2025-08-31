@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASPER TECH - Global Chat</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="color-movement"></div>
+    
+    <!-- Navigation Bar -->
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 100; padding: 10px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="/home" class="btn" style="padding: 8px 15px;">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <h3 style="color: var(--accent-cyan); margin: 0;">
+                    <i class="fas fa-globe-americas"></i> Global Chat
+                </h3>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: var(--text-secondary);">
+                    <i class="fas fa-users"></i> 
+                    <span id="onlineCount">0</span> online
+                </span>
+                <button class="btn" onclick="logout()" style="padding: 8px 15px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 80px;">
+        <!-- Chat Interface -->
+        <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px;">
+            <!-- Main Chat Area -->
+            <div class="chat-container" style="height: 70vh;">
+                <!-- Translation Controls -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: rgba(0, 212, 255, 0.1); border-radius: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="color: var(--accent-cyan);">
+                            <i class="fas fa-language"></i> Auto-translate to:
+                        </label>
+                        <select id="targetLanguage" style="padding: 5px 10px; background: rgba(0, 0, 0, 0.3); color: white; border: 1px solid var(--glass-border); border-radius: 5px;">
+                            <option value="off">Off</option>
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ar">Arabic</option>
+                            <option value="hi">Hindi</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="btn" onclick="toggleTypingIndicator()" style="padding: 5px 10px; font-size: 12px;">
+                            <i class="fas fa-keyboard"></i> 
+                            <span id="typingToggle">Show Typing</span>
+                        </button>
+                        <button class="btn" onclick="clearChat()" style="padding: 5px 10px; font-size: 12px;">
+                            <i class="fas fa-broom"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div class="chat-messages" id="chatMessages">
+                    <div style="text-align: center; opacity: 0.7; padding: 20px;">
+                        <i class="fas fa-comments" style="font-size: 2em; margin-bottom: 10px; color: var(--accent-cyan);"></i>
+                        <p>Welcome to the global chat room!</p>
+                        <p>Share your thoughts with users from around the world.</p>
+                    </div>
+                </div>
+
+                <!-- Typing Indicators -->
+                <div id="typingIndicators" style="padding: 10px; min-height: 30px; border-top: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.1);"></div>
+
+                <!-- Input Area -->
+                <div class="chat-input-container">
+                    <button class="btn" onclick="toggleEmojiPicker()" style="padding: 12px;">
+                        <i class="fas fa-smile"></i>
+                    </button>
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message... Use @username to mention, #hashtag for topics" maxlength="500">
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <button class="btn" onclick="sendMessage()" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button class="btn" onclick="sendVoiceMessage()" style="padding: 8px 12px; background: var(--warm-orange);">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Emoji Picker -->
+                <div id="emojiPicker" class="hidden" style="position: absolute; bottom: 60px; left: 20px; background: var(--glass-bg); padding: 15px; border-radius: 10px; backdrop-filter: blur(10px); border: 1px solid var(--glass-border); max-width: 300px;">
+                    <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px;">
+                        <!-- Emoji buttons will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Online Users -->
+                <div class="admin-panel" style="flex: 1;">
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 15px;">
+                        <i class="fas fa-users"></i> Online Users (<span id="userCount">0</span>)
+                    </h4>
+                    <div id="userList" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Users will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="admin-panel" style="flex: 1;">
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 15px;">
+                        <i class="fas fa-activity"></i> Recent Activity
+                    </h4>
+                    <div id="activityFeed" style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+                        <!-- Activity will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Chat Statistics -->
+                <div class="admin-panel">
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 15px;">
+                        <i class="fas fa-chart-bar"></i> Stats
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Messages today:</span>
+                            <strong id="todayMessages">0</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Your messages:</span>
+                            <strong id="userMessages">0</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Active since:</span>
+                            <strong id="activeTime">00:00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div id="userProfileModal" class="modal hidden">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: var(--accent-cyan);">
+                    <i class="fas fa-user"></i> User Profile
+                </h3>
+                <button class="btn" onclick="closeUserProfile()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="userProfileContent">
+                <!-- Profile content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="/js/chat.js"></script>
+    <script>
+        // Global variables
+        let socket;
+        let currentUser;
+        let typingUsers = new Set();
+        let typingTimeout;
+        let showTyping = true;
+        let userMessages = 0;
+        let startTime = Date.now();
+
+        // Emoji data
+        const emojis = ['😀', '😂', '🤣', '😊', '😍', '🤔', '😮', '😢', '😡', '🤗', '👍', '👎', '❤️', '🎉', '🚀', '🔥'];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            const token = localStorage.getItem('casper_token');
+            const username = localStorage.getItem('casper_username');
+            
+            if (!token || !username) {
+                window.location.href = '/';
+                return;
+            }
+
+            currentUser = username;
+            
+            // Initialize socket connection
+            initializeSocket();
+            
+            // Load initial data
+            loadMessages();
+            updateActiveTime();
+            
+            // Setup emoji picker
+            setupEmojiPicker();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Update stats periodically
+            setInterval(updateStats, 5000);
+            setInterval(updateActiveTime, 60000);
+        });
+
+        function initializeSocket() {
+            socket = io();
+            
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                socket.emit('join', { username: currentUser });
+            });
+
+            socket.on('newMessage', (data) => {
+                displayMessage(data);
+                updateStats();
+            });
+
+            socket.on('userJoined', (data) => {
+                addActivity(`${data.username} joined the chat`, 'user-plus');
+                updateUserList();
+            });
+
+            socket.on('userLeft', (data) => {
+                addActivity(`${data.username} left the chat`, 'user-minus');
+                updateUserList();
+                typingUsers.delete(data.username);
+                updateTypingIndicators();
+            });
+
+            socket.on('userTyping', (data) => {
+                if (data.username !== currentUser && showTyping) {
+                    typingUsers.add(data.username);
+                    updateTypingIndicators();
+                    
+                    // Remove typing indicator after 3 seconds
+                    setTimeout(() => {
+                        typingUsers.delete(data.username);
+                        updateTypingIndicators();
+                    }, 3000);
+                }
+            });
+
+            socket.on('userList', (users) => {
+                updateUserListDisplay(users);
+            });
+        }
+
+        function setupEventListeners() {
+            const chatInput = document.getElementById('chatInput');
+            
+            // Send message on Enter key
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Typing indicator
+            chatInput.addEventListener('input', function() {
+                if (showTyping) {
+                    socket.emit('typing', { username: currentUser });
+                }
+                
+                // Update send button state
+                const sendButton = document.getElementById('sendButton');
+                if (this.value.trim()) {
+                    sendButton.style.background = 'linear-gradient(45deg, var(--accent-cyan), var(--secondary-blue))';
+                } else {
+                    sendButton.style.background = 'linear-gradient(45deg, var(--primary-blue), var(--secondary-blue))';
+                }
+            });
+
+            // Click outside to close emoji picker
+            document.addEventListener('click', function(e) {
+                const emojiPicker = document.getElementById('emojiPicker');
+                const emojiButton = e.target.closest('button[onclick="toggleEmojiPicker()"]');
+                
+                if (!emojiPicker.contains(e.target) && !emojiButton) {
+                    emojiPicker.classList.add('hidden');
+                }
+            });
+        }
+
+        function setupEmojiPicker() {
+            const emojiPicker = document.getElementById('emojiPicker');
+            const emojiGrid = emojiPicker.querySelector('div');
+            
+            emojis.forEach(emoji => {
+                const emojiButton = document.createElement('button');
+                emojiButton.textContent = emoji;
+                emojiButton.style.cssText = `
+                    background: none;
+                    border: none;
+                    font-size: 1.5em;
+                    cursor: pointer;
+                    padding: 5px;
+                    border-radius: 5px;
+                    transition: background 0.2s ease;
+                `;
+                emojiButton.addEventListener('click', () => insertEmoji(emoji));
+                emojiButton.addEventListener('mouseenter', () => {
+                    emojiButton.style.background = 'rgba(0, 212, 255, 0.2)';
+                });
+                emojiButton.addEventListener('mouseleave', () => {
+                    emojiButton.style.background = 'none';
+                });
+                
+                emojiGrid.appendChild(emojiButton);
+            });
+        }
+
+        function insertEmoji(emoji) {
+            const chatInput = document.getElementById('chatInput');
+            const currentValue = chatInput.value;
+            const cursorPos = chatInput.selectionStart;
+            
+            const newValue = currentValue.slice(0, cursorPos) + emoji + currentValue.slice(cursorPos);
+            chatInput.value = newValue;
+            chatInput.focus();
+            chatInput.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
+        }
+
+        function toggleEmojiPicker() {
+            const emojiPicker = document.getElementById('emojiPicker');
+            emojiPicker.classList.toggle('hidden');
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Basic spam protection
+            if (message === lastMessage && Date.now() - lastMessageTime < 2000) {
+                showMessage('Please wait before sending the same message again', 'error');
+                return;
+            }
+
+            lastMessage = message;
+            lastMessageTime = Date.now();
+
+            const messageData = {
+                username: currentUser,
+                message: message,
+                timestamp: new Date().toISOString(),
+                room: 'global'
+            };
+
+            socket.emit('sendMessage', messageData);
+            input.value = '';
+            userMessages++;
+            
+            // Reset send button style
+            const sendButton = document.getElementById('sendButton');
+            sendButton.style.background = 'linear-gradient(45deg, var(--primary-blue), var(--secondary-blue))';
+        }
+
+        let lastMessage = '';
+        let lastMessageTime = 0;
+
+        function displayMessage(messageData) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            // Remove welcome message if it exists
+            const welcomeMsg = messagesContainer.querySelector('div[style*="text-align: center"]');
+            if (welcomeMsg) welcomeMsg.remove();
+            
+            let processedMessage = messageData.message;
+            
+            // Process mentions (@username)
+            processedMessage = processedMessage.replace(/@(\w+)/g, 
+                `<span style="color: var(--accent-cyan); font-weight: bold; background: rgba(0, 212, 255, 0.2); padding: 2px 6px; border-radius: 4px; cursor: pointer;" onclick="mentionUser('$1')">@$1</span>`
+            );
+            
+            // Process hashtags (#tag)
+            processedMessage = processedMessage.replace(/#(\w+)/g, 
+                `<span style="color: var(--warm-orange); font-weight: bold; background: rgba(255, 107, 53, 0.2); padding: 2px 6px; border-radius: 4px; cursor: pointer;" onclick="searchHashtag('$1')">#$1</span>`
+            );
+            
+            // Process URLs
+            processedMessage = processedMessage.replace(/(https?:\/\/[^\s]+)/g, 
+                '<a href="$1" target="_blank" style="color: var(--secondary-blue); text-decoration: underline;">$1</a>'
+            );
+            
+            // Auto-translate if enabled
+            const targetLang = document.getElementById('targetLanguage').value;
+            let translationDiv = '';
+            if (targetLang !== 'off' && messageData.username !== currentUser) {
+                translationDiv = `<div class="translation" style="margin-top: 5px; padding: 5px; background: rgba(255, 107, 53, 0.1); border-radius: 5px; font-style: italic; font-size: 0.9em; display: none;">
+                    <strong>Translation:</strong> <span class="translation-text">Translating...</span>
+                </div>`;
+                
+                // Simulate translation (replace with actual API call)
+                setTimeout(() => {
+                    const translationElement = messageDiv.querySelector('.translation');
+                    if (translationElement) {
+                        translationElement.style.display = 'block';
+                        const translationText = translationElement.querySelector('.translation-text');
+                        translationText.textContent = `[${targetLang.toUpperCase()}] ${messageData.message}`;
+                    }
+                }, 500);
+            }
+            
+            const timestamp = new Date(messageData.timestamp).toLocaleTimeString();
+            
+            messageDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <div class="username" onclick="showUserProfile('${messageData.username}')" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-user-circle" style="color: var(--accent-cyan);"></i>
+                        ${messageData.username}
+                        ${messageData.username === currentUser ? '<i class="fas fa-crown" style="color: gold; font-size: 0.8em;" title="You"></i>' : ''}
+                    </div>
+                    <div class="timestamp">${timestamp}</div>
+                </div>
+                <div style="margin-left: 25px;">${processedMessage}</div>
+                ${translationDiv}
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Add scroll animation
+            messageDiv.style.animation = 'messageSlide 0.4s ease-out';
+        }
+
+        function updateTypingIndicators() {
+            const container = document.getElementById('typingIndicators');
+            
+            if (typingUsers.size === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const users = Array.from(typingUsers);
+            let text = '';
+            
+            if (users.length === 1) {
+                text = `${users[0]} is typing...`;
+            } else if (users.length === 2) {
+                text = `${users[0]} and ${users[1]} are typing...`;
+            } else {
+                text = `${users.slice(0, -1).join(', ')} and ${users[users.length - 1]} are typing...`;
+            }
+            
+            container.innerHTML = `
+                <div style="color: var(--text-secondary); font-style: italic; display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; gap: 2px;">
+                        <div style="width: 4px; height: 4px; background: var(--accent-cyan); border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out;"></div>
+                        <div style="width: 4px; height: 4px; background: var(--accent-cyan); border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out 0.2s;"></div>
+                        <div style="width: 4px; height: 4px; background: var(--accent-cyan); border-radius: 50%; animation: typingDot 1.4s infinite ease-in-out 0.4s;"></div>
+                    </div>
+                    <span>${text}</span>
+                </div>
+            `;
+        }
+
+        function toggleTypingIndicator() {
+            showTyping = !showTyping;
+            const toggleButton = document.getElementById('typingToggle');
+            toggleButton.textContent = showTyping ? 'Hide Typing' : 'Show Typing';
+        }
+
+        function clearChat() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div style="text-align: center; opacity: 0.7; padding: 20px;">
+                    <i class="fas fa-broom" style="font-size: 2em; margin-bottom: 10px; color: var(--accent-cyan);"></i>
+                    <p>Chat cleared for you locally</p>
+                    <small>Other users will still see all messages</small>
+                </div>
+            `;
+        }
+
+        async function loadMessages() {
+            try {
+                const token = localStorage.getItem('casper_token');
+                const response = await fetch('/api/messages', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const messages = await response.json();
+                    messages.forEach(message => displayMessage(message));
+                }
+            } catch (error) {
+                console.error('Failed to load messages:', error);
+            }
+        }
+
+        async function updateUserList() {
+            try {
+                const token = localStorage.getItem('casper_token');
+                const response = await fetch('/api/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const users = await response.json();
+                    updateUserListDisplay(users);
+                }
+            } catch (error) {
+                console.error('Failed to update user list:', error);
+            }
+        }
+
+        function updateUserListDisplay(users) {
+            const userList = document.getElementById('userList');
+            const onlineUsers = users.filter(u => u.status === 'online');
+            
+            document.getElementById('onlineCount').textContent = onlineUsers.length;
+            document.getElementById('userCount').textContent = onlineUsers.length;
+            
+            userList.innerHTML = onlineUsers.map(user => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; margin-bottom: 5px; background: rgba(0, 212, 255, 0.1); border-radius: 8px; cursor: pointer;" onclick="showUserProfile('${user.username}')">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 8px; height: 8px; background: #2ed573; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                        <span style="font-weight: ${user.username === currentUser ? 'bold' : 'normal'};">
+                            ${user.username}
+                            ${user.username === currentUser ? ' (You)' : ''}
+                        </span>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        ${user.username !== currentUser ? `
+                            <button onclick="event.stopPropagation(); startPrivateChat('${user.username}')" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; padding: 2px;">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addActivity(message, icon) {
+            const activityFeed = document.getElementById('activityFeed');
+            const activityDiv = document.createElement('div');
+            activityDiv.style.cssText = 'display: flex; align-items: center; gap: 10px; padding: 8px; margin-bottom: 5px; background: rgba(0, 153, 255, 0.1); border-radius: 6px; animation: fadeIn 0.3s ease-out;';
+            activityDiv.innerHTML = `
+                <i class="fas fa-${icon}" style="color: var(--accent-cyan); width: 15px;"></i>
+                <div style="flex: 1; font-size: 0.9em;">
+                    <div>${message}</div>
+                    <small style="opacity: 0.7;">${new Date().toLocaleTimeString()}</small>
+                </div>
+            `;
+            
+            activityFeed.insertBefore(activityDiv, activityFeed.firstChild);
+            
+            // Keep only last 10 activities
+            const activities = activityFeed.children;
+            if (activities.length > 10) {
+                activityFeed.removeChild(activities[activities.length - 1]);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('todayMessages').textContent = Math.floor(Math.random() * 500) + 100;
+            document.getElementById('userMessages').textContent = userMessages;
+        }
+
+        function updateActiveTime() {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const hours = Math.floor(minutes / 60);
+            const displayMinutes = minutes % 60;
+            
+            document.getElementById('activeTime').textContent = 
+                hours > 0 ? `${hours}:${displayMinutes.toString().padStart(2, '0')}` : `${minutes}m`;
+        }
+
+        function showUserProfile(username) {
+            const modal = document.getElementById('userProfileModal');
+            const content = document.getElementById('userProfileContent');
+            
+            // Mock user data (in real app, fetch from API)
+            const userData = {
+                username: username,
+                joinDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                messagesCount: Math.floor(Math.random() * 1000) + 10,
+                status: 'online',
+                lastActive: 'Now'
+            };
+            
+            content.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(45deg, var(--accent-cyan), var(--secondary-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2em; color: white;">
+                        ${username.charAt(0).toUpperCase()}
+                    </div>
+                    <h3 style="color: var(--accent-cyan); margin-bottom: 5px;">@${username}</h3>
+                    <div style="color: var(--text-secondary); font-size: 0.9em;">
+                        <i class="fas fa-circle" style="color: #2ed573; font-size: 0.5em;"></i> ${userData.status}
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="text-align: center; padding: 15px; background: rgba(0, 212, 255, 0.1); border-radius: 10px;">
+                        <div style="font-size: 1.5em; color: var(--accent-cyan); font-weight: bold;">${userData.messagesCount}</div>
+                        <div style="font-size: 0.9em; opacity: 0.8;">Messages</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(0, 212, 255, 0.1); border-radius: 10px;">
+                        <div style="font-size: 1.5em; color: var(--accent-cyan); font-weight: bold;">
+                            ${Math.floor((Date.now() - new Date(userData.joinDate)) / (24 * 60 * 60 * 1000))}
+                        </div>
+                        <div style="font-size: 0.9em; opacity: 0.8;">Days Active</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 10px;"><strong>Joined:</strong> ${userData.joinDate}</div>
+                    <div style="margin-bottom: 10px;"><strong>Last Active:</strong> ${userData.lastActive}</div>
+                </div>
+                
+                ${username !== currentUser ? `
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" onclick="startPrivateChat('${username}')" style="flex: 1;">
+                            <i class="fas fa-comment"></i> Private Chat
+                        </button>
+                        <button class="btn" onclick="mentionUser('${username}')" style="flex: 1; background: var(--warm-orange);">
+                            <i class="fas fa-at"></i> Mention
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeUserProfile() {
+            document.getElementById('userProfileModal').classList.add('hidden');
+        }
+
+        function mentionUser(username) {
+            const chatInput = document.getElementById('chatInput');
+            const currentValue = chatInput.value;
+            const mention = `@${username} `;
+            
+            if (!currentValue.includes(mention)) {
+                chatInput.value = mention + currentValue;
+            }
+            
+            chatInput.focus();
+            closeUserProfile();
+        }
+
+        function startPrivateChat(username) {
+            window.location.href = `/private-chat?user=${username}`;
+        }
+
+        function searchHashtag(hashtag) {
+            const chatInput = document.getElementById('chatInput');
+            chatInput.value = `#${hashtag} `;
+            chatInput.focus();
+        }
+
+        function sendVoiceMessage() {
+            // Voice message functionality (would require WebRTC implementation)
+            showMessage('Voice messages coming soon!', 'info');
+        }
+
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                z-index: 1002;
+                max-width: 300px;
+                padding: 12px 16px;
+                border-radius: 8px;
+                font-weight: 500;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 3000);
+        }
+
+        function logout() {
+            if (socket) {
+                socket.disconnect();
+            }
+            
+            localStorage.removeItem('casper_token');
+            localStorage.removeItem('casper_username');
+            window.location.href = '/';
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserList();
+        });
+    </script>
+
+    <style>
+        @keyframes typingDot {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Custom scrollbar for chat */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent-cyan), var(--secondary-blue));
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--secondary-blue), var(--accent-cyan));
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container > div {
+                grid-template-columns: 1fr !important;
+            }
+            
+            nav > div {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .chat-input-container {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</body>
+</html>
