@@ -4,23 +4,10 @@
   <meta charset="UTF-8">
   <title>Admin Dashboard - CASPER Server</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body { background: #17172b; color: #fff; font-family: 'Segoe UI',sans-serif; }
-    .header { font-size: 2em; text-align: center; padding: 1em 0 .5em 0; font-weight: bold; }
-    #dash { max-width: 1080px; margin: 2em auto; padding: 2em; background: #25254b; border-radius: 18px; box-shadow: 0 2px 14px #0007;}
-    .row { display: flex; flex-wrap: wrap; gap: 2em; margin-bottom: 2em; }
-    .card { flex: 1; min-width: 200px; background: #232347; border-radius: 14px; padding: 1.7em 1.4em; box-shadow: 0 0 8px #0003; margin-bottom: 1.2em;}
-    .card h2 { font-size: 1.3em; margin-bottom: .8em; }
-    .ad-block { background: #2fc3c6; color: #212; border-radius: 10px; padding: 1em 1.2em; font-weight: bold; margin-bottom: 1.2em;}
-    .table-wrap {overflow-x:auto;}
-    table { width: 100%; background: #20203b; border-collapse: collapse; margin-top: 1em;}
-    th,td { padding: .7em 1em; border-bottom: 1px solid #333; }
-    th { background: #31286c; color: #fff; }
-    .ip { color: #35ee7c; }
-    @media (max-width:800px){ .row{flex-direction:column;} .card{margin-bottom:2em;} }
-  </style>
+  <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
+  <div id="navbar"></div>
   <div class="header">Admin Dashboard</div>
   <div id="dash">
     <div class="ad-block" id="ad-block">Ad: Upgrade to CASPER PRO for more features!</div>
@@ -56,6 +43,7 @@
       </table>
     </div>
   </div>
+  <script src="navbar.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>
