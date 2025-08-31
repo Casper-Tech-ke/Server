@@ -1,9 +1,8 @@
-// server.js - Main Node.js backend for CASPER Server with Socket.io
+// CASPER Server v2 - Node.js + Express + Socket.io (with native fetch, Node.js 18+)
 
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const fetch = require('node-fetch'); // For AI REST API calls
 const path = require('path');
 
 const app = express();
@@ -13,18 +12,19 @@ const io = new Server(server);
 // Serve static files from /public (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- In-memory data stores for demo ---
+// --- In-memory data stores for demonstration ---
 let users = []; // { id, name, status, ip }
 let privateMessages = []; // {from, to, message, time}
 let adminBroadcasts = []; // {message, time, ip}
 let feedbacks = []; // {from, category, message, time}
+let chatRoomMessages = []; // {from, text, time}
 
 // --- Socket.io events ---
 io.on("connection", socket => {
   let userName = null;
   let userIp = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
 
-  // User joins server (sent from client)
+  // User joins server (for private chat and dashboard)
   socket.on("user-join", name => {
     userName = name;
     // Remove any user with same socket id (refresh)
@@ -33,16 +33,16 @@ io.on("connection", socket => {
     io.emit("user-list", users);
   });
 
-  // AI chat
+  // --- AI Chatbot (ai-chat.html) ---
   socket.on("ai-message", async (msg) => {
     let text = (msg && msg.text) ? msg.text : "";
     let aiReply = "";
     if (/who (are|is) your? (developer|creator)/i.test(text)) {
-      aiReply = "I was created by CASPER TECH KENYA.";
+      aiReply = "I was created by David Cyril Tech.";
     } else if (/who are you|your name/i.test(text)) {
       aiReply = "I am CASPER AI, your personal assistant.";
     } else {
-      // Call main AI API, fallback to backup APIs if needed
+      // Try main AI API, then fallback to backups
       const endpoints = [
         `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(text)}`,
         `https://apis.davidcyriltech.my.id/ai/deepseek-r1?text=${encodeURIComponent(text)}`,
@@ -65,33 +65,33 @@ io.on("connection", socket => {
             aiReply = value;
             break;
           }
-        } catch { /* skip to next */ }
+        } catch { /* continue to next endpoint */ }
       }
       if (!aiReply) aiReply = "Sorry, CASPER AI is not responding right now.";
     }
     socket.emit("ai-reply", { text: aiReply });
   });
 
-  // Private messaging
+  // --- Private Messaging (private-chat.html) ---
   socket.on("private-message", ({from, to, message}) => {
     privateMessages.push({from, to, message, time: Date.now()});
-    // Send to recipient and to admin (broadcast to all in demo)
+    // Send to recipient and to admin (here: broadcast to all for demo; in prod, send only to recipient/admin)
     io.emit("private-message", {from, to, message, time: Date.now()});
   });
 
-  // Contact admin/feedback
+  // --- Contact Admin/Feedback ---
   socket.on("feedback", ({from, category, message}) => {
     feedbacks.push({from, category, message, time: Date.now()});
     io.emit("admin-feedback", {from, category, message, time: Date.now()});
   });
 
-  // Broadcast message from admin
+  // --- Admin Broadcast ---
   socket.on("broadcast", ({message}) => {
     adminBroadcasts.push({message, time: Date.now(), ip: userIp});
     io.emit("broadcast", {message, time: Date.now()});
   });
 
-  // Dashboard data request
+  // --- Dashboard (dashboard.html) data request ---
   socket.on("dashboard-request", () => {
     socket.emit("dashboard-data", {
       members: users,
@@ -101,13 +101,21 @@ io.on("connection", socket => {
     });
   });
 
+  // --- Live Chat Room (chat-room.html) ---
+  socket.on("chat-room-message", ({from, text}) => {
+    const msg = {from, text, time: Date.now()};
+    chatRoomMessages.push(msg);
+    io.emit("chat-room-message", msg);
+  });
+
+  // Handle disconnect
   socket.on("disconnect", () => {
     users = users.filter(u => u.id !== socket.id);
     io.emit("user-list", users);
   });
 });
 
-// Fallback route
+// Fallback: always serve index.html for unknown routes (SPA support)
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const PORT = process.env.PORT || 10000;
